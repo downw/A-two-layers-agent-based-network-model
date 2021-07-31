@@ -6,10 +6,17 @@ NetLogo code
 if you use this project, please cite our paper:
 
 @article{guo2021modeling,
+
   title={Modeling and Simulating Online Panic in an Epidemic Complexity System: An Agent-Based Approach},
+  
   author={Guo, Linjiang and Li, Yang and Sheng, Dongfang},
+  
   journal={Complexity},
+  
   volume={2021},
+  
   year={2021},
+  
   publisher={Hindawi}
+  
 }
