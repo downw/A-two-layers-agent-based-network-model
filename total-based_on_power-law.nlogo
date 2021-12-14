@@ -1,8 +1,8 @@
-;;日总
+;;total coronavirus cases
 globals [
   M
   N
-  increase      ;;increase，判断病例总数是否增加
+  increase      ;;increase，Determine if the total number of cases has increased
   signal1
   add-infection
   cure
@@ -40,8 +40,8 @@ to go
 end
 
 to setup2
-  set M 0           ;;全局媒体强度
-  set N 0           ;;最多感染人数
+  set M 0           ;;Global media strength
+  set N 0           ;;Maximum number of infected
   set increase false
   set add-infection 0
   set cure 0
@@ -52,7 +52,7 @@ to setup2
     become-susceptible
   ]
 
-  ask turtles [               ;;循环
+  ask turtles [               ;; loop
   set Y random-normal 0 0.1
   set susceptible true
   set exposed false
@@ -61,7 +61,7 @@ to setup2
 
   ]
   ask n-of initial-outbreak-size turtles
-    [ become-exposed ]  ;; 初始化指定数量的暴露者
+    [ become-exposed ]  ;; Initializes a specified number of exposures
 
   reset-ticks
 end
@@ -81,7 +81,7 @@ to remove-infection
 end
 
 to spread
-  if all? turtles [(not infection) and (not exposed)] ;; 如果全部的状态为未被感染，那就停止运行
+  if all? turtles [(not infection) and (not exposed)] ;;If all states are not infected, stop running
     [ stop ]
   panic-media
   ask turtles
@@ -91,8 +91,8 @@ to spread
   ]
   ask turtles
   [
-     set virus-check-timer virus-check-timer + 1                      ;;每次go，都给 “距离上一次病毒检查过去了多少时间步” 记一次时
-     if (virus-check-timer >= virus-check-frequency and susceptible)  ;; 定期做检查
+     set virus-check-timer virus-check-timer + 1                      ;;For each 'go', "how many time steps have passed since the last virus check" is recorded once
+     if (virus-check-timer >= virus-check-frequency and susceptible)  ;; Get regular check-ups
        [ set virus-check-timer 0 ] ;; 置0
   ]
 
@@ -112,10 +112,10 @@ to spread
     [set test-probability 1.00]
   ]
 
-  let Ni count turtles with [infection] + test-probability * count turtles with[exposed]            ;;记录本轮感染人数
+  let Ni count turtles with [infection] + test-probability * count turtles with[exposed]            ;;Record the number of infected patients in this round
 
    ifelse Ni >  N
-  [                                    ;;判断确诊人数是否大
+  [                                    ;;Determine whether the number of confirmed cases is bigger
     set increase true
   ]
   [set increase false]
@@ -123,7 +123,7 @@ to spread
 
 
 
-   ;; 调用函数，实现暴露者和感染者康复
+   ;; Call the function to realize the rehabilitation of the exposed and infected
   do-virus-checks
 
   tick
@@ -206,26 +206,26 @@ end
 
 ;; -------------------------------------------------------------------------------
 
-to update-panic                         ;;更新个人信息恐慌情绪
+to update-panic                         ;;Panic about updating personal information
 
 
    ifelse infection
   [
-    panic-infection    ;;感染后恐慌情绪变化-Y
+    panic-infection    ;;Panic changes after infection -Y
   ]
 
   [
-    panic-neighbors    ;;从邻居处获得的恐慌情绪
-    if random-float 1 < get-media-rate and not infection          ;;以概率k从媒体获得恐慌,修正自身恐慌情绪
+    panic-neighbors    ;;Panic from the neighbors
+    if random-float 1 < get-media-rate and not infection          ;;Get panic from the media with probability K and correct your panic
     [
       let degree count link-neighbors
       let x (Y * degree + M) / degree
-      set Y (e ^ x - e ^ ( -1 * x)) / (e ^ x + e ^ ( -1 * x))                 ;;朋友越多，全局媒体强度影响约小
+      set Y (e ^ x - e ^ ( -1 * x)) / (e ^ x + e ^ ( -1 * x))                 ;;The more friends you have, the less effect the global media intensity has
     ]
   ]
 
 
-  panic-reduce         ;;恐慌度自然衰减比率
+  panic-reduce         ;;The natural decay rate of panic
 
 
 end
@@ -233,7 +233,7 @@ end
 
 
 
-to become-susceptible  ;; 个体变成易感的
+to become-susceptible  ;; Individuals become susceptible
   set susceptible true
   set exposed false
   set infection false
@@ -241,7 +241,7 @@ to become-susceptible  ;; 个体变成易感的
   set color blue
 end
 
-to become-exposed  ;; 个体转为暴露者
+to become-exposed  ;; Individuals become exposed
   set susceptible false
   set exposed true
   set infection false
@@ -249,7 +249,7 @@ to become-exposed  ;; 个体转为暴露者
   set color yellow
 end
 
-to become-infection  ;; 个体被感染
+to become-infection  ;; The individual is infected
   set susceptible false
   set exposed false
   set infection true
@@ -259,25 +259,25 @@ end
 
 
 
-to become-recover  ;; 个体被获得病毒抗性
+to become-recover  ;; Individuals acquire viral resistance
   set susceptible true
   set exposed false
   set infection false
   set recover true
   set color gray
-  ask my-links [ set color gray - 2 ] ;; 让无效节点的连边颜色变灰
+  ask my-links [ set color gray - 2 ] ;; Grey out the edges of invalid nodes
 end
 
 
 
-to panic-infection                       ;;感染后恐慌情绪变化
+to panic-infection                       ;;Panic changes after infection
   set Y random-float 0.1 + k
 end
 
-to panic-neighbors                    ;;从邻居处获得的恐慌情绪
-  let Y-neighbor 0                                             ;;计算公式分子
-  let high-num-neighbors count link-neighbors with [Y > 0.6]   ;;计算高权重邻居所占权重
-  let low-num-neighbors count link-neighbors with [Y <= 0.6]   ;;计算低权重邻居所占权重
+to panic-neighbors                    ;;Panic from the neighbors
+  let Y-neighbor 0                                             ;;Calculation formula Numerator 
+  let high-num-neighbors count link-neighbors with [Y > 0.6]   ;;Calculate the weight of a high-weight neighbor
+  let low-num-neighbors count link-neighbors with [Y <= 0.6]   ;;Calculate the weights of low-weight neighbors
   let wight-neighbors high-num-neighbors * 10 + low-num-neighbors
   ask link-neighbors
   [
@@ -287,20 +287,20 @@ to panic-neighbors                    ;;从邻居处获得的恐慌情绪
   set Y Y-neighbor / wight-neighbors
 end
 
-to panic-media                          ;;全局媒体强度
+to panic-media                          ;;Global media strength
 
     ifelse increase
   [
     ifelse (count turtles with [infection] + test-probability * count turtles with[exposed]) < 100
     [set M k / 5]
     [set M k / 2]
-  ]       ;;如果病例数增加时全局媒体强度变化
+  ]       ;;If the number of cases increases, the global media intensity changes
   [set M 0]
 end
 
 
 
-to panic-reduce                          ;;恐慌度自然衰减比率
+to panic-reduce                          ;;The natural decay rate of panic
   set Y panic-reduce-rate * Y
 end
 
@@ -308,7 +308,7 @@ to spread-virus ;; 健康人感染病毒
   let people count turtles
   let exposed_count count turtles with [exposed]
   let infection_count count turtles with [infection]
-  let rate ((contact * exposed_infected * exposed_count + contact * infection_infected * infection_count) / people) ;;可优化减少运算复杂度
+  let rate ((contact * exposed_infected * exposed_count + contact * infection_infected * infection_count) / people) ;;Can be optimized to reduce computational complexity
   let real_rate rate * (count turtles with [susceptible]) / people
   set signal1 real_rate
   ask turtles with [ susceptible and not recover ]
@@ -320,10 +320,10 @@ to spread-virus ;; 健康人感染病毒
     ;;        [ become-infection ] ] ]
 end
 
-to convert-infection  ;;一定天数由暴露者转化为染病者
+to convert-infection  ;;A certain number of days from exposure to infection
   ask turtles with[exposed]
   [
-    if random-normal -2 2 + incubation < virus-check-timer      ;;使用随机数使得患病更均匀
+    if random-normal -2 2 + incubation < virus-check-timer      ;;Using random numbers makes the disease more uniform
       [become-infection]
   ]
 
@@ -332,15 +332,15 @@ end
 
 
 
-to do-virus-checks  ;; 暴露者和感染者康复
+to do-virus-checks  ;; Recovery of exposed and infected persons
   ask turtles with [(infection or exposed) and virus-check-timer > 0]
   [
-    if random 100 < recovery-chance  ;; 有一定概率治愈或自愈
+    if random 100 < recovery-chance  ;; There is a certain probability of healing or self-healing
     [
         become-recover
       ;;ifelse random 100 < gain-resistance-chance
-      ;;  [ become-recover ]    ;;在治愈的基础上，有一定概率能获得病毒抗性
-      ;;  [ become-susceptible ]  ;;不够幸运，未能获得病毒抗性的人，重新变成易感的
+      ;;  [ become-recover ]    ;;On the basis of cure, there is a certain probability of acquiring resistance to the virus
+      ;;  [ become-susceptible ]  ;;People who are not lucky enough to acquire resistance to the virus become susceptible again
     ]
   ]
 end
