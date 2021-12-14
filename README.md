@@ -9,12 +9,12 @@ Appearing again How does the the total cases affect panic in Netlogo. It is Logo
 if you use this project or dataset, please cite our paper:
 
 ## BibTeX
-@article{guo2021modeling,
-  title={Modeling and Simulating Online Panic in an Epidemic Complexity System: An Agent-Based Approach},
-  author={Guo, Linjiang and Li, Yang and Sheng, Dongfang},
-  journal={Complexity},
-  volume={2021},
-  year={2021},
-  publisher={Hindawi}
-}
-##
+  @article{guo2021modeling,
+    title={Modeling and Simulating Online Panic in an Epidemic Complexity System: An Agent-Based Approach},
+    author={Guo, Linjiang and Li, Yang and Sheng, Dongfang},
+    journal={Complexity},
+    volume={2021},
+    year={2021},
+    publisher={Hindawi}
+  }
+
